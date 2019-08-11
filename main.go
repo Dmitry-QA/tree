@@ -40,12 +40,12 @@ func walk(out io.Writer, path string, prefix string, printFiles bool) error {
 	}
 	for index, file := range fileInfo {
 		if index == len(fileInfo)-1 {
-			addDataToWriter(out, file, prefix, "└───", printFiles)
+			addDataToWriter(out, file, prefix+"└───")
 			if file.IsDir() {
 				walk(out, path+file.Name()+"\\", prefix+"\t", printFiles)
 			}
 		} else {
-			addDataToWriter(out, file, prefix, "├───", printFiles)
+			addDataToWriter(out, file, prefix+"├───")
 			if file.IsDir() {
 				walk(out, path+file.Name()+"\\", prefix+"│\t", printFiles)
 			}
@@ -53,12 +53,9 @@ func walk(out io.Writer, path string, prefix string, printFiles bool) error {
 	}
 	return nil
 }
-func addDataToWriter(out io.Writer, fileInfo os.FileInfo, prefix, childPrefix string, printFiles bool) {
-	if !printFiles && fileInfo.IsDir() {
-		out.Write([]byte(prefix + childPrefix + getFormatedFileName(fileInfo)))
-	} else if printFiles {
-		out.Write([]byte(prefix + childPrefix + getFormatedFileName(fileInfo)))
-	}
+
+func addDataToWriter(out io.Writer, fileInfo os.FileInfo, prefix string) {
+	out.Write([]byte(prefix + getFormatedFileName(fileInfo)))
 }
 
 func getFormatedFileName(fileInfo os.FileInfo) string {
@@ -86,11 +83,11 @@ func formatFileSize(size int64) string {
 }
 
 func deleteFilesFromSlice(arr []os.FileInfo) []os.FileInfo {
-	resultArr := make([]os.FileInfo, 0)
+	resultSlice := make([]os.FileInfo, 0)
 	for x, file := range arr {
 		if file.IsDir() {
-			resultArr = append(resultArr, arr[x])
+			resultSlice = append(resultSlice, arr[x])
 		}
 	}
-	return resultArr
+	return resultSlice
 }
